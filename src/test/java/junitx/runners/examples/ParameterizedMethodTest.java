@@ -1,6 +1,6 @@
-package junitx.examples;
+package junitx.runners.examples;
 
-import junitx.Runner;
+import junitx.runners.Runner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

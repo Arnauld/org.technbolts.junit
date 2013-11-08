@@ -1,4 +1,4 @@
-package junitx;
+package junitx.runners;
 
 import org.junit.Test;
 import org.junit.runner.Description;

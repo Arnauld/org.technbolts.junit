@@ -1,5 +1,6 @@
-package junitx;
+package junitx.runners;
 
+import junitx.runners.Runner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;

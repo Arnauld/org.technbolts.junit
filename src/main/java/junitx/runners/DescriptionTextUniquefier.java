@@ -1,4 +1,4 @@
-package junitx;
+package junitx.runners;
 
 import java.util.HashSet;
 import java.util.Set;

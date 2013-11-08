@@ -1,4 +1,4 @@
-package junitx;
+package junitx.runners;
 
 import org.junit.*;
 import org.junit.internal.AssumptionViolatedException;
@@ -17,7 +17,6 @@ import org.junit.runners.model.TestClass;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="http://twitter.com/aloyer">@aloyer</a>

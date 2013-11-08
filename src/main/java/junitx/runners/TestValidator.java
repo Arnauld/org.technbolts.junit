@@ -1,4 +1,4 @@
-package junitx;
+package junitx.runners;
 
 import org.junit.*;
 import org.junit.runners.model.FrameworkMethod;
