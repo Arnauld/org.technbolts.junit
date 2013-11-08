@@ -4,9 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>junit-ext</groupId>
-    <artifactId>junit-ext</artifactId>
+    <groupId>org.technbolts</groupId>
+    <artifactId>junit</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:Arnauld/org.technbolts.junit.git</connection>
+        <developerConnection>scm:git:git@github.com:Arnauld/org.technbolts.junit.git</developerConnection>
+        <url>git@github.com:Arnauld/org.technbolts.junit.git</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <!-- ************************************************ -->
     <!-- *~~~~~~~~~~~~~~~~DEPENDENCIES~~~~~~~~~~~~~~~~~~* -->
@@ -37,14 +52,6 @@
             <version>1.4</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <!-- ************************************************ -->

@@ -1,4 +1,4 @@
-package junitx.runners;
+package org.technbolts.junit.runners;
 
 import org.junit.*;
 import org.junit.internal.AssumptionViolatedException;
@@ -30,12 +30,6 @@ public class FrameworkMethodRunner extends org.junit.runner.Runner {
     private final Object[] methodArgs;
 
     public FrameworkMethodRunner(Class<?> testClass,
-                                 String testName,
-                                 FrameworkMethod method) throws InitializationError {
-        this(testClass, null, testName, method, null);
-    }
-
-    public FrameworkMethodRunner(Class<?> testClass,
                                  Object[] testArgs,
                                  String testName,
                                  FrameworkMethod method, Object[] methodArgs) throws InitializationError {
@@ -52,7 +46,7 @@ public class FrameworkMethodRunner extends org.junit.runner.Runner {
         this.description = description;
         this.method = method;
         this.methodArgs = methodArgs;
-        new TestValidator(this.testClass, Arrays.asList(method)).validate();
+        new TestValidator(this.testClass, testArgs, Arrays.asList(method)).validate();
     }
 
     public TestClass getTestClass() {

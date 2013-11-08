@@ -1,4 +1,4 @@
-package junitx.runners;
+package org.technbolts.junit.runners;
 
 import org.junit.*;
 import org.junit.runners.model.FrameworkMethod;
@@ -18,10 +18,12 @@ public class TestValidator {
 
 
     private final TestClass testClass;
+    private final Object[] testArgs;
     private final List<FrameworkMethod> methods;
 
-    public TestValidator(TestClass testClass, List<FrameworkMethod> methods) {
+    public TestValidator(TestClass testClass, Object[] testArgs, List<FrameworkMethod> methods) {
         this.testClass = testClass;
+        this.testArgs = testArgs;
         this.methods = methods==null ? computeTestMethods() : methods;
     }
 
@@ -65,7 +67,7 @@ public class TestValidator {
      */
     protected void validateConstructor(List<Throwable> errors) {
         validateOnlyOneConstructor(errors);
-        validateZeroArgConstructor(errors);
+        validateConstructorParameters(errors);
     }
 
     /**
@@ -83,11 +85,15 @@ public class TestValidator {
      * Adds to {@code errors} if the test class's single constructor takes
      * parameters (do not override)
      */
-    protected void validateZeroArgConstructor(List<Throwable> errors) {
+    protected void validateConstructorParameters(List<Throwable> errors) {
+        int nbParams = (testArgs==null) ? 0 : testArgs.length;
         if (!getTestClass().isANonStaticInnerClass()
                 && hasOneConstructor()
-                && (getTestClass().getOnlyConstructor().getParameterTypes().length != 0)) {
+                && (getTestClass().getOnlyConstructor().getParameterTypes().length != nbParams)) {
             String gripe = "Test class should have exactly one public zero-argument constructor";
+            if(nbParams>0) {
+                gripe = "Test class should have exactly one public constructor with " + nbParams + " parameter(s)";
+            }
             errors.add(new Exception(gripe));
         }
     }

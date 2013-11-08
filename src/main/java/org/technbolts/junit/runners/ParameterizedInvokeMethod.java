@@ -1,4 +1,4 @@
-package junitx.runners;
+package org.technbolts.junit.runners;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;

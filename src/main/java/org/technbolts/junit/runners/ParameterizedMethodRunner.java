@@ -1,4 +1,4 @@
-package junitx.runners;
+package org.technbolts.junit.runners;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ParameterizedMethodRunner extends ParentRunner<FrameworkMethodRunner> {
 
+    private final Object[] testArgs;
     private final FrameworkMethod method;
     private final String name;
     private final Iterable<Object[]> parameters;
@@ -25,11 +26,13 @@ public class ParameterizedMethodRunner extends ParentRunner<FrameworkMethodRunne
     private final List<FrameworkMethodRunner> children;
 
     public ParameterizedMethodRunner(Class<?> testClass,
+                                     Object[] testArgs,
                                      FrameworkMethod method,
                                      String name,
                                      Iterable<Object[]> parameters,
                                      String namePattern) throws InitializationError {
         super(testClass);
+        this.testArgs = testArgs;
         this.method = method;
         this.name = name;
         this.parameters = parameters;
@@ -51,7 +54,7 @@ public class ParameterizedMethodRunner extends ParentRunner<FrameworkMethodRunne
             Class<?> javaClass = getTestClass().getJavaClass();
             String testName = nameFor(namePattern, i, parametersOfSingleTest);
             Description description = Description.createTestDescription(getTestClass().getName(), testName, idGen.incrementAndGet());
-            children.add(new FrameworkMethodRunner(javaClass, null, description, method, parametersOfSingleTest));
+            children.add(new FrameworkMethodRunner(javaClass, testArgs, description, method, parametersOfSingleTest));
             ++i;
         }
         return children;
@@ -61,8 +64,7 @@ public class ParameterizedMethodRunner extends ParentRunner<FrameworkMethodRunne
         String finalPattern = namePattern
                 .replaceAll("\\{index\\}", Integer.toString(index))
                 .replaceAll("\\{method\\}", method.getName());
-        String name = MessageFormat.format(finalPattern, parameters);
-        return "[" + name + "]";
+        return MessageFormat.format(finalPattern, parameters);
     }
 
 

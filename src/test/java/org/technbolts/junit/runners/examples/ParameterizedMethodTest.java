@@ -1,6 +1,6 @@
-package junitx.runners.examples;
+package org.technbolts.junit.runners.examples;
 
-import junitx.runners.Runner;
+import org.technbolts.junit.runners.Runner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

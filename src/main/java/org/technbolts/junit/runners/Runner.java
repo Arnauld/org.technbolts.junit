@@ -1,10 +1,11 @@
-package junitx.runners;
+package org.technbolts.junit.runners;
 
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.TestClass;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,7 +28,7 @@ public class Runner extends Suite {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.METHOD})
+    @Target({ElementType.METHOD, ElementType.TYPE})
     public @interface Parameterized {
         String namePattern() default "";
 
@@ -46,7 +47,7 @@ public class Runner extends Suite {
      */
     public Runner(Class<?> klass) throws Throwable {
         super(klass, NO_RUNNERS);
-        createRunners();
+        createRunners(runners);
     }
 
     @Override
@@ -59,31 +60,87 @@ public class Runner extends Suite {
         return child.getDescription();
     }
 
-    private void createRunners() throws Throwable {
+    private void createRunners(List<org.junit.runner.Runner> runners) throws Throwable {
+        TestClass testClass = getTestClass();
+
+        Parameterized testParameterized = testClass.getJavaClass().getAnnotation(Parameterized.class);
+
+        if (testParameterized != null) {
+
+            String namePattern = testParameterized.namePattern();
+            if (namePattern.isEmpty()) {
+                int length = testClass.getOnlyConstructor().getParameterTypes().length;
+                namePattern = generateNamePattern(length); //"{method}:" + b;
+            }
+
+            int i = 0;
+            for (Object[] testArgs : allParameters(testParameterized.dataProvider())) {
+                List<org.junit.runner.Runner> subRunners = new ArrayList<org.junit.runner.Runner>();
+                createRunnersWithTestParameters(subRunners, testArgs);
+                if (subRunners.isEmpty())
+                    continue;
+                String name = nameFor(namePattern, i, testArgs);
+                runners.add(new SuiteExt(getTestClass().getJavaClass(), name, subRunners));
+                ++i;
+            }
+        } else {
+            createRunnersWithTestParameters(runners, null);
+        }
+    }
+
+    private String nameFor(String namePattern, int index, Object[] parameters) {
+        String finalPattern = namePattern
+                .replaceAll("\\{index\\}", Integer.toString(index))
+                .replaceAll("\\{class\\}", getTestClass().getName());
+        return MessageFormat.format(finalPattern, parameters);
+    }
+
+    protected static class SuiteExt extends Suite {
+        private final String name;
+        private final Description description;
+
+        public SuiteExt(Class<?> klass, String name, List<org.junit.runner.Runner> runners) throws InitializationError {
+            super(klass, runners);
+            this.name = name;
+            this.description = Description.createTestDescription(klass, name);
+        }
+
+        @Override
+        protected String getName() {
+            return name;
+        }
+    }
+
+    private void createRunnersWithTestParameters(List<org.junit.runner.Runner> runners, Object[] testArgs) throws Throwable {
         List<FrameworkMethod> testMethods = getTestClass().getAnnotatedMethods(Test.class);
         for (FrameworkMethod method : testMethods) {
             Parameterized parameterized = method.getAnnotation(Parameterized.class);
             if (parameterized == null) {
-                createSimpleTest(method);
+                createSimpleTest(runners, testArgs, method);
             } else {
-                createParameterizedTest(method, parameterized);
+                createParameterizedTest(runners, testArgs, method, parameterized);
             }
         }
     }
 
-    private void createParameterizedTest(FrameworkMethod method, Parameterized parameterized) throws Throwable {
+    private String generateNamePattern(int length) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            if (i > 0)
+                b.append(", ");
+            b.append("{").append(i).append("}");
+        }
+        return b.toString();
+    }
+
+    private void createParameterizedTest(List<org.junit.runner.Runner> runners, Object[] testArgs, FrameworkMethod method, Parameterized parameterized) throws Throwable {
         String namePattern = parameterized.namePattern();
         if (namePattern.isEmpty()) {
             int length = method.getMethod().getParameterTypes().length;
-            StringBuilder b = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                if (b.length() > 0)
-                    b.append(", ");
-                b.append("{").append(i).append("}");
-            }
-            namePattern = "" + b; //"{method}:" + b;
+            namePattern = generateNamePattern(length); //"{method}:" + b;
         }
         runners.add(new ParameterizedMethodRunner(getTestClass().getJavaClass(),
+                testArgs,
                 method,
                 method.getName(),
                 allParameters(parameterized.dataProvider()),
@@ -125,8 +182,13 @@ public class Runner extends Suite {
                 + getTestClass().getName() + " for name " + name);
     }
 
-    private void createSimpleTest(FrameworkMethod method) throws InitializationError {
-        runners.add(new FrameworkMethodRunner(getTestClass().getJavaClass(), method.getName(), method));
+    private DescriptionTextUniquefier uniquefier = new DescriptionTextUniquefier();
+
+    private void createSimpleTest(List<org.junit.runner.Runner> runners, Object[] testArgs, FrameworkMethod method) throws InitializationError {
+        runners.add(new FrameworkMethodRunner(
+                getTestClass().getJavaClass(), testArgs,
+                uniquefier.getUniqueDescription(method.getName()),
+                method, null));
     }
 
 }
