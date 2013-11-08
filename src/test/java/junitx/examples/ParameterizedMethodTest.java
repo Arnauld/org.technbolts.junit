@@ -21,12 +21,12 @@ public class ParameterizedMethodTest {
     @Test
     @Runner.Parameterized(dataProvider = "zog")
     public void testZog(String value) {
-        System.out.println(">>>" + value + "<<<");
+        System.out.println("ParameterizedMethodTest.testZog(" + value + ")");
     }
 
     @Test
     public void someOtherTest() {
-
+        System.out.println("ParameterizedMethodTest.someOtherTest()");
     }
 
 }
