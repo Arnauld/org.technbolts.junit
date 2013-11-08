@@ -20,15 +20,10 @@ public class TestValidator {
     private final TestClass testClass;
     private final List<FrameworkMethod> methods;
 
-    public TestValidator(TestClass testClass) {
-        this(testClass, null);
-    }
-
     public TestValidator(TestClass testClass, List<FrameworkMethod> methods) {
         this.testClass = testClass;
         this.methods = methods==null ? computeTestMethods() : methods;
     }
-
 
     /**
      * Returns the methods that run tests. Default implementation returns all
