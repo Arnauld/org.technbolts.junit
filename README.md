@@ -2,6 +2,16 @@
 
 Provides utilities to enrich [Junit](http://junit.org/).
 
+Available through Maven Central:
+
+    <dependency>
+      <groupId>org.technbolts</groupId>
+      <artifactId>junit</artifactId>
+      <version>1.0.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+
 ## Parameterized test
 
 When running a parameterized test class, instances are created for the cross-product of
